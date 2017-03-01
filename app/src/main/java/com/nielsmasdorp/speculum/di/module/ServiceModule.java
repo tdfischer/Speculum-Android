@@ -6,7 +6,6 @@ import com.nielsmasdorp.speculum.services.ForecastIOService;
 import com.nielsmasdorp.speculum.services.GoogleCalendarService;
 import com.nielsmasdorp.speculum.services.GoogleMapsService;
 import com.nielsmasdorp.speculum.services.RedditService;
-import com.nielsmasdorp.speculum.services.YoMommaService;
 
 import javax.inject.Singleton;
 
@@ -45,12 +44,5 @@ public class ServiceModule {
     public RedditService redditService() {
 
         return new RedditService();
-    }
-
-    @Provides
-    @Singleton
-    public YoMommaService yoMommaService() {
-
-        return new YoMommaService();
     }
 }

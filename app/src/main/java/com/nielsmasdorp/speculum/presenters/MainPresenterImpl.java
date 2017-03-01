@@ -12,7 +12,6 @@ import com.nielsmasdorp.speculum.interactor.MainInteractor;
 import com.nielsmasdorp.speculum.models.Configuration;
 import com.nielsmasdorp.speculum.models.RedditPost;
 import com.nielsmasdorp.speculum.models.Weather;
-import com.nielsmasdorp.speculum.models.YoMommaJoke;
 import com.nielsmasdorp.speculum.util.Constants;
 import com.nielsmasdorp.speculum.views.MainView;
 
@@ -238,10 +237,6 @@ public class MainPresenterImpl implements MainPresenter, RecognitionListener, Te
                 setListeningMode(Constants.COMMANDS_SEARCH);
                 updateData();
                 break;
-            case Constants.JOKE_PHRASE:
-                interactor.loadYoMommaJoke(new YoMammaJokeSubscriber());
-                setListeningMode(Constants.COMMANDS_SEARCH);
-                break;
             case Constants.MAP_PHRASE:
                 speak(Constants.MAP_NOTIFICATION);
                 setListeningMode(Constants.COMMANDS_SEARCH);
@@ -405,23 +400,6 @@ public class MainPresenterImpl implements MainPresenter, RecognitionListener, Te
         @Override
         public void onNext(String events) {
             view.displayCalendarEvents(events);
-        }
-    }
-
-    private final class YoMammaJokeSubscriber extends Subscriber<YoMommaJoke> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            view.showError(e.getMessage());
-        }
-
-        @Override
-        public void onNext(YoMommaJoke joke) {
-            speak(joke.getJoke());
         }
     }
 

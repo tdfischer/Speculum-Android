@@ -10,7 +10,6 @@ public class Constants {
      */
     public static final String REDDIT_BASE_URL = "https://www.reddit.com/r/";
     public static final String FORECAST_BASE_URL = "https://api.forecast.io/forecast/";
-    public static final String YO_MOMMA_BASE_URL = "http://api.yomomma.info/";
     public static final String GOOGLE_MAPS_BASE_URL = "http://maps.google.com/maps/api/geocode/";
     public static final String STATIC_MAPS_URL_FIRST = "https://maps.googleapis.com/maps/api/staticmap?center=";
     public static final String STATIC_MAPS_URL_SECOND = "&zoom=15&size=1000x1000&markers=color:blue%7Clabel:%7C";
@@ -76,7 +75,6 @@ public class Constants {
     public static final String COMMANDS_SEARCH = "commands";
     public static final String KEYPHRASE = "hello magic mirror";
     public static final String UPDATE_PHRASE = "update";
-    public static final String JOKE_PHRASE = "tell me a joke";
     public static final String SLEEP_PHRASE = "go to sleep";
     public static final String MAP_PHRASE = "show my location";
 

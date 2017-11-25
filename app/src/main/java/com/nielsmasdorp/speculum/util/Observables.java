@@ -10,10 +10,9 @@ import java.util.concurrent.TimeUnit;
  */
 public enum Observables {;
 
-    public static Func1<Observable<? extends Throwable>, Observable<?>> exponentialBackoff(
-            int maxRetryCount, long delay, TimeUnit unit) {
+    public static Func1<Observable<? extends Throwable>, Observable<?>> exponentialBackoff(long delay, TimeUnit unit) {
         return errors -> errors
-                .zipWith(Observable.range(1, maxRetryCount), (error, retryCount) -> retryCount)
+                .zipWith(Observable.just(1), (error, retryCount) -> retryCount)
                 .flatMap(retryCount -> Observable.timer((long) Math.pow(delay, retryCount), unit));
     }
 }

@@ -17,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.assent.Assent;
-import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.nielsmasdorp.speculum.R;
 import com.nielsmasdorp.speculum.SpeculumApplication;
@@ -27,8 +26,6 @@ import com.nielsmasdorp.speculum.models.Weather;
 import com.nielsmasdorp.speculum.presenters.MainPresenter;
 import com.nielsmasdorp.speculum.util.ASFObjectStore;
 import com.nielsmasdorp.speculum.util.Constants;
-import com.nielsmasdorp.speculum.views.MainView;
-import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -39,7 +36,7 @@ import butterknife.ButterKnife;
 /**
  * @author Niels Masdorp (NielsMasdorp)
  */
-public class MainActivity extends AppCompatActivity implements MainView, View.OnSystemUiVisibilityChangeListener {
+public class MainActivity extends AppCompatActivity implements View.OnSystemUiVisibilityChangeListener {
 
     // @formatter:off
     @BindView(R.id.iv_current_weather) ImageView ivWeatherCondition;
@@ -79,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
     @BindString(R.string.command_understood) String commandUnderstood;
     @BindString(R.string.executing) String executing;
     @BindString(R.string.last_updated) String lastUpdated;
-    @BindString(R.string.static_maps_api_key) String mapsApiKey;
 
     // @formatter:on
 
@@ -99,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
         setContentView(R.layout.activity_main);
         ((SpeculumApplication) getApplication()).createMainComponent(this).inject(this);
         Assent.setActivity(this, this);
+        objectStore.setObject(new Configuration.Builder().build());
 
         Configuration configuration = objectStore.get();
         boolean didLoadOldConfig = getIntent().getBooleanExtra(Constants.SAVED_CONFIGURATION_IDENTIFIER, false);
@@ -140,46 +137,16 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
         mDecorView.setOnSystemUiVisibilityChangeListener(this);
     }
 
-    @Override
     public void showListening() {
         ivListening.setVisibility(View.VISIBLE);
         ivListening.startAnimation(AnimationUtils.loadAnimation(this, R.anim.pulse));
     }
 
-    @Override
     public void hideListening() {
         ivListening.clearAnimation();
         ivListening.setVisibility(View.INVISIBLE);
     }
 
-    @Override
-    public void showMap(String location) {
-
-        String url = Constants.STATIC_MAPS_URL_FIRST +
-                location + Constants.STATIC_MAPS_URL_SECOND +
-                location + Constants.STATIC_MAPS_URL_THIRD +
-                mapsApiKey;
-
-        mapDialog = new MaterialDialog.Builder(this)
-                .customView(R.layout.map_image, false)
-                .contentGravity(GravityEnum.CENTER)
-                .build();
-
-        View imageView = mapDialog.getCustomView();
-        Picasso.with(MainActivity.this).load(url).into((ImageView) imageView);
-        mapDialog.show();
-    }
-
-    @Override
-    public void hideMap() {
-        if (null != mapDialog && mapDialog.isShowing()) {
-            mapDialog.dismiss();
-            mapDialog = null;
-        }
-        hideSystemUI();
-    }
-
-    @Override
     @SuppressWarnings("all")
     public void displayCurrentWeather(Weather weather, boolean isSimpleLayout) {
 
@@ -217,7 +184,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
         }
     }
 
-    @Override
     @SuppressWarnings("all")
     public void displayTopRedditPost(RedditPost redditPost) {
         tvRedditPostTitle.setText(redditPost.getTitle());
@@ -226,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
             this.llRedditLayout.setVisibility(View.VISIBLE);
     }
 
-    @Override
     @SuppressWarnings("all")
     public void displayCalendarEvents(String events) {
         this.tvCalendarEvent.setText(events);
@@ -234,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
             this.llCalendarLayout.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void showError(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

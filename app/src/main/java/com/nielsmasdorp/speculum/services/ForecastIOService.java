@@ -2,10 +2,12 @@ package com.nielsmasdorp.speculum.services;
 
 import android.app.Application;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import com.nielsmasdorp.speculum.R;
 import com.nielsmasdorp.speculum.models.ForecastDayWeather;
 import com.nielsmasdorp.speculum.models.Weather;
+import com.nielsmasdorp.speculum.models.forecast.Currently;
 import com.nielsmasdorp.speculum.models.forecast.DayForecast;
 import com.nielsmasdorp.speculum.models.forecast.ForecastResponse;
 import com.nielsmasdorp.speculum.util.Constants;
@@ -45,10 +47,11 @@ public class ForecastIOService {
 
     public Observable<Weather> getCurrentWeather(ForecastResponse response,
                                                  WeatherIconGenerator iconGenerator,
-                                                 Application application,
-                                                 boolean metric) {
+                                                 Application application) {
 
+        boolean metric = true;
         boolean is24HourFormat = DateFormat.is24HourFormat(application);
+        Currently currently = response.getCurrently();
 
         String distanceUnit = metric ? Constants.DISTANCE_METRIC : Constants.DISTANCE_IMPERIAL;
         String pressureUnit = metric ? Constants.PRESSURE_METRIC : Constants.PRESSURE_IMPERIAL;
@@ -59,7 +62,7 @@ public class ForecastIOService {
 
         // Convert degrees to cardinal directions for wind
         String[] directions = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
-        String direction = directions[(int) Math.round((response.getCurrently().getWindBearing() % 360) / 45)];
+        String direction = directions[(int) Math.round((currently.getWindBearing() % 360) / 45)];
 
         List<ForecastDayWeather> forecast = new ArrayList<>();
 
@@ -75,13 +78,13 @@ public class ForecastIOService {
 
         return Observable.just(new Weather.Builder()
                 .iconId(iconGenerator.getIcon(response.getCurrently().getIcon()))
-                .summary(response.getCurrently().getSummary())
-                .temperature(response.getCurrently().getTemperature().intValue() + "º" + temperatureUnit)
-                .lastUpdated(new SimpleDateFormat(!is24HourFormat ? "h:mm" : "H:mm", Locale.getDefault()).format(new Date((long) response.getCurrently().getTime() * 1000)))
-                .windInfo(response.getCurrently().getWindSpeed().intValue() + speedUnit + " " + direction + " | " + response.getCurrently().getApparentTemperature().intValue() + "º" + temperatureUnit)
-                .humidityInfo((int) (response.getCurrently().getHumidity() * 100) + "%")
-                .pressureInfo(response.getCurrently().getPressure().intValue() + pressureUnit)
-                .visibilityInfo(response.getCurrently().getVisibility().intValue() + distanceUnit)
+                .summary(currently.getSummary())
+                .temperature(currently.getTemperature().intValue() + "º" + temperatureUnit)
+                .lastUpdated(new SimpleDateFormat(!is24HourFormat ? "h:mm" : "H:mm", Locale.getDefault()).format(new Date((long) currently.getTime() * 1000)))
+                .windInfo(currently.getWindSpeed().intValue() + speedUnit + " " + direction + " | " + currently.getApparentTemperature().intValue() + "º" + temperatureUnit)
+                .humidityInfo((int) (currently.getHumidity() * 100) + "%")
+                .pressureInfo(currently.getPressure().intValue() + pressureUnit)
+                .visibilityInfo(currently.getVisibility().intValue() + distanceUnit)
                 .forecast(forecast)
                 .build());
     }

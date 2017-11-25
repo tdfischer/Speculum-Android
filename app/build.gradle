@@ -10,8 +10,6 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'com.neenbedankt.android-apt'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -21,11 +19,10 @@ repositories {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '23.0.3'
 
     defaultConfig {
         applicationId "com.nielsmasdorp.speculum"
-        minSdkVersion 17
+        minSdkVersion 22
         targetSdkVersion 25
         versionCode 3
         versionName "1.1.0"
@@ -64,8 +61,12 @@ dependencies {
         transitive = true
     }
 
-    apt 'com.jakewharton:butterknife-compiler:8.0.1'
-    apt 'com.google.dagger:dagger-compiler:2.1'
+    compile 'com.google.android.gms:play-services-location:11.6.0'
+
+    compile 'net.sf.biweekly:biweekly:0.6.1'
+
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.0.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.1'
 
     provided 'javax.annotation:jsr250-api:1.0'
 }

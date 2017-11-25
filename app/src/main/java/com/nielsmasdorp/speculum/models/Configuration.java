@@ -6,40 +6,26 @@ package com.nielsmasdorp.speculum.models;
 public class Configuration {
 
     private boolean celsius;
-    private String location;
     private String subreddit;
-    private int pollingDelay;
     private boolean rememberConfig;
     private boolean voiceCommands;
     private boolean simpleLayout;
 
     public static class Builder {
 
-        private boolean celsius;
-        private String location;
-        private String subreddit;
-        private int pollingDelay;
+        private boolean celsius = true;
+        private String subreddit = "oakland+bayarea+california";
         private boolean rememberConfig;
         private boolean voiceCommands;
-        private boolean simpleLayout;
+        private boolean simpleLayout = false;
 
         public Builder celsius(boolean celsius) {
             this.celsius = celsius;
             return this;
         }
 
-        public Builder location(String location) {
-            this.location = location;
-            return this;
-        }
-
         public Builder subreddit(String subreddit) {
             this.subreddit = subreddit;
-            return this;
-        }
-
-        public Builder pollingDelay(int pollingDelay) {
-            this.pollingDelay = pollingDelay;
             return this;
         }
 
@@ -67,9 +53,7 @@ public class Configuration {
     private Configuration(Builder builder) {
 
         this.celsius = builder.celsius;
-        this.location = builder.location;
         this.subreddit = builder.subreddit;
-        this.pollingDelay = builder.pollingDelay;
         this.rememberConfig = builder.rememberConfig;
         this.voiceCommands = builder.voiceCommands;
         this.simpleLayout = builder.simpleLayout;
@@ -83,28 +67,12 @@ public class Configuration {
         this.celsius = celsius;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public String getSubreddit() {
         return subreddit;
     }
 
     public void setSubreddit(String subreddit) {
         this.subreddit = subreddit;
-    }
-
-    public int getPollingDelay() {
-        return pollingDelay;
-    }
-
-    public void setPollingDelay(int pollingDelay) {
-        this.pollingDelay = pollingDelay;
     }
 
     public boolean isVoiceCommands() {

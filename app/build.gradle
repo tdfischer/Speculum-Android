@@ -13,6 +13,8 @@ apply plugin: 'com.android.application'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url 'https://oosnmp.net/dist/release' }
+    maven { url 'https://jitpack.io' }
     mavenCentral()
 }
 
@@ -64,6 +66,8 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:11.6.0'
 
     compile 'net.sf.biweekly:biweekly:0.6.1'
+    compile 'org.snmp4j:snmp4j:2.5.8'
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.0.1'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.1'

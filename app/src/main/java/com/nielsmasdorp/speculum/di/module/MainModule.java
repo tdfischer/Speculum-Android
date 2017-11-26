@@ -8,7 +8,9 @@ import com.nielsmasdorp.speculum.interactor.MainInteractor;
 import com.nielsmasdorp.speculum.presenters.MainPresenter;
 import com.nielsmasdorp.speculum.services.ForecastIOService;
 import com.nielsmasdorp.speculum.services.GoogleCalendarService;
+import com.nielsmasdorp.speculum.services.OctoprintService;
 import com.nielsmasdorp.speculum.services.RedditService;
+import com.nielsmasdorp.speculum.services.SNMPService;
 import com.nielsmasdorp.speculum.util.WeatherIconGenerator;
 
 import dagger.Module;
@@ -40,8 +42,10 @@ public class MainModule {
                                                 ForecastIOService forecastIOService,
                                                 GoogleCalendarService googleMapService,
                                                 RedditService redditService,
-                                                WeatherIconGenerator iconGenerator) {
+                                                WeatherIconGenerator iconGenerator,
+                                                OctoprintService octoprintService,
+                                                SNMPService snmpService) {
 
-        return new MainInteractor(application, forecastIOService, googleMapService, redditService, iconGenerator);
+        return new MainInteractor(application, forecastIOService, googleMapService, redditService, iconGenerator, octoprintService, snmpService);
     }
 }

@@ -17,6 +17,9 @@ import com.nielsmasdorp.speculum.interactor.MainInteractor;
 import com.nielsmasdorp.speculum.models.Configuration;
 import com.nielsmasdorp.speculum.models.RedditPost;
 import com.nielsmasdorp.speculum.models.Weather;
+import com.nielsmasdorp.speculum.models.octoprint.Job;
+import com.nielsmasdorp.speculum.services.OctoprintService;
+import com.nielsmasdorp.speculum.services.SNMPService;
 import com.nielsmasdorp.speculum.util.Constants;
 
 import java.io.File;
@@ -74,6 +77,7 @@ public class MainPresenter implements RecognitionListener, TextToSpeech.OnInitLi
                     startCalendar();
                 }
             }
+            startPrinter();
         }
     }
 
@@ -134,8 +138,13 @@ public class MainPresenter implements RecognitionListener, TextToSpeech.OnInitLi
         interactor.loadTopRedditPost(configuration.getSubreddit(), new RedditSubscriber());
     }
 
+    private void startPrinter() {
+        interactor.loadPrinter(new PrinterSubscriber());
+    }
+
     private void startCalendar() {
         interactor.loadCalendarEvents(new CalendarEventSubscriber());
+        interactor.loadSNMP(new SNMPSubscriber());
     }
     /*
     End start background data methods
@@ -339,68 +348,51 @@ public class MainPresenter implements RecognitionListener, TextToSpeech.OnInitLi
    End tts lifecycle methods
     */
 
-    private final class WeatherSubscriber extends Subscriber<Weather> {
+    private abstract class DataSubscriber<T> extends Subscriber<T> {
+        @Override
+        public void onCompleted() {}
 
         @Override
-        public void onCompleted() {
-        }
+        public void onError(Throwable e) { view.showError(e.getMessage());}
+    }
 
-        @Override
-        public void onError(Throwable e) {
-            view.showError(e.getMessage());
-        }
-
+    private final class WeatherSubscriber extends DataSubscriber<Weather> {
         @Override
         public void onNext(Weather weather) {
             view.displayCurrentWeather(weather, configuration.isSimpleLayout());
         }
     }
 
-    private final class RedditSubscriber extends Subscriber<RedditPost> {
-
+    private final class PrinterSubscriber extends DataSubscriber<Job> {
         @Override
-        public void onCompleted() {
+        public void onNext(Job job) {
+            Log.d("presenter", "Printer status: "+job.getState());
+            view.displayPrinterJob(job);
         }
+    }
 
+    private final class SNMPSubscriber extends DataSubscriber<SNMPService.NetActivity> {
         @Override
-        public void onError(Throwable e) {
-            view.showError(e.getMessage());
+        public void onNext(SNMPService.NetActivity act) {
+            view.displayNetActivity(act);
         }
+    }
 
+    private final class RedditSubscriber extends DataSubscriber<RedditPost> {
         @Override
         public void onNext(RedditPost redditPost) {
             view.displayTopRedditPost(redditPost);
         }
     }
 
-    private final class CalendarEventSubscriber extends Subscriber<String> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            view.showError(e.getMessage());
-        }
-
+    private final class CalendarEventSubscriber extends DataSubscriber<String> {
         @Override
         public void onNext(String events) {
             view.displayCalendarEvents(events);
         }
     }
 
-    private final class AssetSubscriber extends Subscriber<File> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            view.showError(e.getMessage());
-        }
-
+    private final class AssetSubscriber extends DataSubscriber<File> {
         @Override
         public void onNext(File assetDir) {
             setupRecognizer(assetDir);

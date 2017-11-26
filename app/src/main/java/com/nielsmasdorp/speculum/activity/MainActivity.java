@@ -2,30 +2,48 @@ package com.nielsmasdorp.speculum.activity;
 
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.assent.Assent;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.nielsmasdorp.speculum.R;
 import com.nielsmasdorp.speculum.SpeculumApplication;
 import com.nielsmasdorp.speculum.models.Configuration;
 import com.nielsmasdorp.speculum.models.RedditPost;
 import com.nielsmasdorp.speculum.models.Weather;
+import com.nielsmasdorp.speculum.models.octoprint.Job;
 import com.nielsmasdorp.speculum.presenters.MainPresenter;
+import com.nielsmasdorp.speculum.services.SNMPService;
 import com.nielsmasdorp.speculum.util.ASFObjectStore;
 import com.nielsmasdorp.speculum.util.Constants;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -42,11 +60,9 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
     @BindView(R.id.iv_current_weather) ImageView ivWeatherCondition;
     @BindView(R.id.tv_current_temp) TextView tvWeatherTemperature;
     @BindView(R.id.weather_layout) LinearLayout llWeatherLayout;
-    @BindView(R.id.tv_last_updated) TextView tvWeatherLastUpdated;
     @BindView(R.id.iv_listening) ImageView ivListening;
 
     @Nullable @BindView(R.id.tv_summary) TextView tvWeatherSummary;
-    @Nullable @BindView(R.id.weather_stats_layout) LinearLayout llWeatherStatsLayout;
     @Nullable @BindView(R.id.calendar_layout) LinearLayout llCalendarLayout;
     @Nullable @BindView(R.id.reddit_layout) LinearLayout llRedditLayout;
     @Nullable @BindView(R.id.iv_forecast_weather1) ImageView ivDayOneIcon;
@@ -61,13 +77,13 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
     @Nullable @BindView(R.id.iv_forecast_weather4) ImageView ivDayFourIcon;
     @Nullable @BindView(R.id.tv_forecast_temp4) TextView tvDayFourTemperature;
     @Nullable @BindView(R.id.tv_forecast_date4) TextView tvDayFourDate;
-    @Nullable @BindView(R.id.tv_stats_wind) TextView tvWeatherWind;
-    @Nullable @BindView(R.id.tv_stats_humidity) TextView tvWeatherHumidity;
-    @Nullable @BindView(R.id.tv_stats_pressure) TextView tvWeatherPressure;
-    @Nullable @BindView(R.id.tv_stats_visibility) TextView tvWeatherVisibility;
     @Nullable @BindView(R.id.tv_calendar_event) TextView tvCalendarEvent;
     @Nullable @BindView(R.id.tv_reddit_post_title) TextView tvRedditPostTitle;
     @Nullable @BindView(R.id.tv_reddit_post_votes) TextView tvRedditPostVotes;
+    @Nullable @BindView(R.id.tv_printer_status) TextView tvPrinterStatus;
+    @Nullable @BindView(R.id.pb_printer_progress) ProgressBar pbPrinterProgress;
+    @Nullable @BindView(R.id.tv_printer_eta) TextView tvPrinterETA;
+    @Nullable @BindView(R.id.lc_net_activity) LineChart lcNetActivity;
 
     @BindString(R.string.old_config_found_snackbar) String oldConfigFound;
     @BindString(R.string.old_config_found_snackbar_back) String getOldConfigFoundBack;
@@ -97,6 +113,34 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
         Assent.setActivity(this, this);
         objectStore.setObject(new Configuration.Builder().build());
 
+        LineData lineData = new LineData();
+        LineDataSet downloadSet = new LineDataSet(null, "Download");
+        downloadSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        downloadSet.setColor(Color.GREEN);
+        downloadSet.setDrawValues(false);
+        downloadSet.setLineWidth(1.5f);
+        downloadSet.setFillAlpha(65);
+        downloadSet.setFillColor(Color.GREEN);
+        downloadSet.setDrawCircles(false);
+        downloadSet.setDrawFilled(true);
+        lineData.addDataSet(downloadSet);
+
+        LineDataSet uploadSet = new LineDataSet(null, "Upload");
+        uploadSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        uploadSet.setColor(Color.YELLOW);
+        uploadSet.setDrawValues(false);
+        uploadSet.setDrawFilled(true);
+        uploadSet.setLineWidth(1.5f);
+        uploadSet.setFillAlpha(65);
+        uploadSet.setFillColor(Color.YELLOW);
+        uploadSet.setDrawCircles(false);
+        lineData.addDataSet(uploadSet);
+
+        for(int i = 0; i < 200; i++) {
+            uploadSet.addEntry(new Entry(i, 0));
+            downloadSet.addEntry(new Entry(i, 0));
+        }
+
         Configuration configuration = objectStore.get();
         boolean didLoadOldConfig = getIntent().getBooleanExtra(Constants.SAVED_CONFIGURATION_IDENTIFIER, false);
 
@@ -114,6 +158,11 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
             showConfigurationSnackbar();
 
         presenter.setConfiguration(configuration);
+
+        LineChart chart = (LineChart) findViewById(R.id.lc_net_activity);
+        chart.setData(lineData);
+        chart.setAutoScaleMinMaxEnabled(true);
+        chart.getLegend().setTextColor(Color.WHITE);
     }
 
     private void showConfigurationSnackbar() {
@@ -153,14 +202,8 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
         // Current simple weather
         this.ivWeatherCondition.setImageResource(weather.getIconId());
         this.tvWeatherTemperature.setText(weather.getTemperature());
-        this.tvWeatherLastUpdated.setText(lastUpdated + " " + weather.getLastUpdated());
 
         if (!isSimpleLayout) {
-            // More weather info
-            this.tvWeatherWind.setText(weather.getWindInfo());
-            this.tvWeatherHumidity.setText(weather.getHumidityInfo());
-            this.tvWeatherPressure.setText(weather.getPressureInfo());
-            this.tvWeatherVisibility.setText(weather.getVisibilityInfo());
             // Forecast
             this.tvDayOneDate.setText(weather.getForecast().get(0).getDate());
             this.tvDayOneTemperature.setText(weather.getForecast().get(0).getTemperature());
@@ -180,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
 
         if (this.llWeatherLayout.getVisibility() != View.VISIBLE) {
             this.llWeatherLayout.setVisibility(View.VISIBLE);
-            this.llWeatherStatsLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -230,5 +272,55 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
     protected void onDestroy() {
         super.onDestroy();
         ((SpeculumApplication) getApplication()).releaseMainComponent();
+    }
+
+    float lastDownload = 0;
+    float lastUpload = 0;
+
+    public void displayNetActivity(SNMPService.NetActivity activity) {
+        LineData data = lcNetActivity.getData();
+        ILineDataSet downloadSet = data.getDataSetByIndex(0);
+        ILineDataSet uploadSet = data.getDataSetByIndex(1);
+
+        if (lastDownload == 0) {
+            lastDownload = activity.download;
+            lastUpload = activity.upload;
+        }
+
+        float downloadDelta = activity.download - lastDownload;
+        float uploadDelta = activity.upload - lastUpload;
+        lastDownload = activity.download;
+        lastUpload = activity.upload;
+
+
+        downloadSet.addEntry(new Entry(downloadSet.getXMax()+1, downloadDelta));
+        uploadSet.addEntry(new Entry(uploadSet.getXMax()+1, -uploadDelta));
+        while (downloadSet.getEntryCount() > 200) {
+            downloadSet.removeFirst();
+        }
+        while (uploadSet.getEntryCount() > 200) {
+            uploadSet.removeFirst();
+        }
+
+        data.notifyDataChanged();
+        lcNetActivity.notifyDataSetChanged();
+        lcNetActivity.setAutoScaleMinMaxEnabled(true);
+        lcNetActivity.setVisibleXRangeMaximum(250);
+        lcNetActivity.moveViewToX(downloadSet.getEntryCount());
+    }
+
+    public void displayPrinterJob(Job job) {
+        tvPrinterStatus.setText("Printer is " + job.getState() + ".");
+        if (job.getProgress().getCompletion() != null) {
+            pbPrinterProgress.setProgress((int) ((double)job.getProgress().getCompletion()));
+            pbPrinterProgress.setVisibility(View.VISIBLE);
+            int printTime = (int) ((double) job.getProgress().getPrintTimeLeft());
+            String printEta = DateUtils.formatElapsedTime(printTime) + " remaining";
+            tvPrinterETA.setText(printEta);
+            tvPrinterETA.setVisibility(View.VISIBLE);
+        } else {
+            pbPrinterProgress.setVisibility(View.INVISIBLE);
+            tvPrinterETA.setVisibility(View.INVISIBLE);
+        }
     }
 }

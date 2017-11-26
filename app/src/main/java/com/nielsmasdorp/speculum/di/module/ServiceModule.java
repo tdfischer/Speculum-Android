@@ -4,7 +4,9 @@ import android.app.Application;
 
 import com.nielsmasdorp.speculum.services.ForecastIOService;
 import com.nielsmasdorp.speculum.services.GoogleCalendarService;
+import com.nielsmasdorp.speculum.services.OctoprintService;
 import com.nielsmasdorp.speculum.services.RedditService;
+import com.nielsmasdorp.speculum.services.SNMPService;
 
 import javax.inject.Singleton;
 
@@ -36,5 +38,17 @@ public class ServiceModule {
     public RedditService redditService() {
 
         return new RedditService();
+    }
+
+    @Provides
+    @Singleton
+    public OctoprintService octoprintService(Application application) {
+        return new OctoprintService(application);
+    }
+
+    @Provides
+    @Singleton
+    public SNMPService snmpService() {
+        return new SNMPService();
     }
 }

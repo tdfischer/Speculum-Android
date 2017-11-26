@@ -1,9 +1,13 @@
 package com.nielsmasdorp.speculum.interactor;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.nielsmasdorp.speculum.models.RedditPost;
 import com.nielsmasdorp.speculum.models.Weather;
+import com.nielsmasdorp.speculum.models.octoprint.Job;
+import com.nielsmasdorp.speculum.services.OctoprintService;
+import com.nielsmasdorp.speculum.services.SNMPService;
 import com.nielsmasdorp.speculum.util.Observables;
 import com.nielsmasdorp.speculum.services.ForecastIOService;
 import com.nielsmasdorp.speculum.services.GoogleCalendarService;
@@ -37,16 +41,20 @@ public class MainInteractor {
     private RedditService redditService;
     private WeatherIconGenerator weatherIconGenerator;
     private CompositeSubscription compositeSubscription;
+    private OctoprintService octoprintService;
+    private SNMPService snmpService;
 
     public MainInteractor(Application application, ForecastIOService forecastIOService,
-                              GoogleCalendarService googleCalendarService, RedditService redditService,
-                              WeatherIconGenerator weatherIconGenerator) {
+                          GoogleCalendarService googleCalendarService, RedditService redditService,
+                          WeatherIconGenerator weatherIconGenerator, OctoprintService octoprintService, SNMPService snmpService) {
 
         this.application = application;
         this.forecastIOService = forecastIOService;
         this.googleCalendarService = googleCalendarService;
         this.redditService = redditService;
         this.weatherIconGenerator = weatherIconGenerator;
+        this.octoprintService = octoprintService;
+        this.snmpService = snmpService;
         this.compositeSubscription = new CompositeSubscription();
     }
 
@@ -61,12 +69,33 @@ public class MainInteractor {
                 .subscribe(subscriber));
     }
 
+    public void loadSNMP(Subscriber<SNMPService.NetActivity> subscriber) {
+        compositeSubscription.add(Observable.interval(0, 80, TimeUnit.MILLISECONDS)
+                .flatMap(ignore -> snmpService.getActivity())
+                .retry()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .subscribe(subscriber));
+    }
+
     public void loadTopRedditPost(String subreddit, Subscriber<RedditPost> subscriber) {
 
         compositeSubscription.add(Observable.interval(0, 30, TimeUnit.MINUTES)
                 .flatMap(ignore -> redditService.getApi().getTopRedditPostForSubreddit(subreddit, Constants.REDDIT_LIMIT))
                 .flatMap(redditService::getRedditPost)
                 .retryWhen(Observables.exponentialBackoff(DELAY_IN_SECONDS, TimeUnit.SECONDS))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .subscribe(subscriber));
+    }
+
+    public void loadPrinter(Subscriber<Job> subscriber) {
+        compositeSubscription.add(Observable.interval(0, 30, TimeUnit.MINUTES)
+                .flatMap(ignore -> octoprintService.getOctoprinter())
+                .flatMap(printer -> printer.getJob())
+                .retry()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())

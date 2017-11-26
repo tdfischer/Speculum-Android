@@ -1,8 +1,7 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical">
 
@@ -20,12 +19,12 @@
             android:format12Hour="h:mm"
             android:format24Hour="kk:mm"
             android:textColor="@color/white"
-            android:textSize="200dp"/>
+            android:textSize="200dp" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/iv_listening"
@@ -34,7 +33,7 @@
             android:layout_margin="16dp"
             android:src="@drawable/ic_mic"
             android:tint="@color/white"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
     </LinearLayout>
 
@@ -46,7 +45,7 @@
         android:format12Hour="dd MMM yyyy"
         android:format24Hour="dd MMM yyyy"
         android:textColor="@color/white"
-        android:textSize="54dp"/>
+        android:textSize="54dp" />
 
     <LinearLayout
         android:id="@+id/weather_layout"
@@ -68,7 +67,7 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_weather_partlycloudy"/>
+                android:src="@drawable/ic_weather_partlycloudy" />
 
             <TextView
                 android:id="@+id/tv_current_temp"
@@ -77,7 +76,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="50dp"
-                tools:text="6ºC"/>
+                tools:text="6ºC" />
 
         </LinearLayout>
 
@@ -93,7 +92,7 @@
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_weather_partlycloudy"/>
+                android:src="@drawable/ic_weather_partlycloudy" />
 
             <TextView
                 android:id="@+id/tv_forecast_temp1"
@@ -102,7 +101,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="30dp"
-                tools:text="10ºC"/>
+                tools:text="10ºC" />
 
             <TextView
                 android:id="@+id/tv_forecast_date1"
@@ -111,7 +110,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="25dp"
-                tools:text="5 jan"/>
+                tools:text="5 jan" />
 
         </LinearLayout>
 
@@ -127,7 +126,7 @@
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_weather_sunny"/>
+                android:src="@drawable/ic_weather_sunny" />
 
             <TextView
                 android:id="@+id/tv_forecast_temp2"
@@ -136,7 +135,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="30dp"
-                tools:text="10ºC"/>
+                tools:text="10ºC" />
 
             <TextView
                 android:id="@+id/tv_forecast_date2"
@@ -145,7 +144,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="25dp"
-                tools:text="6 jan"/>
+                tools:text="6 jan" />
 
         </LinearLayout>
 
@@ -161,7 +160,7 @@
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_weather_sleet"/>
+                android:src="@drawable/ic_weather_sleet" />
 
             <TextView
                 android:id="@+id/tv_forecast_temp3"
@@ -170,7 +169,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="30dp"
-                tools:text="10ºC"/>
+                tools:text="10ºC" />
 
             <TextView
                 android:id="@+id/tv_forecast_date3"
@@ -179,7 +178,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="25dp"
-                tools:text="7 jan"/>
+                tools:text="7 jan" />
 
         </LinearLayout>
 
@@ -197,7 +196,7 @@
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
-                tools:src="@drawable/ic_weather_partlycloudy"/>
+                tools:src="@drawable/ic_weather_partlycloudy" />
 
             <TextView
                 android:id="@+id/tv_forecast_temp4"
@@ -206,7 +205,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="30dp"
-                tools:text="10ºC"/>
+                tools:text="10ºC" />
 
             <TextView
                 android:id="@+id/tv_forecast_date4"
@@ -215,7 +214,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:textSize="25dp"
-                tools:text="8 jan"/>
+                tools:text="8 jan" />
 
         </LinearLayout>
 
@@ -226,153 +225,7 @@
         android:layout_height="2dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/white"/>
-
-    <LinearLayout
-        android:id="@+id/weather_stats_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="invisible"
-        tools:visibility="visible">
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <ImageView
-                android:id="@+id/iv_stats_wind"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginBottom="8dp"
-                android:paddingBottom="4dp"
-                android:paddingEnd="4dp"
-                android:paddingStart="0dp"
-                android:paddingTop="4dp"
-                android:src="@drawable/ic_wind_stats"
-                android:tint="@color/white"/>
-
-            <TextView
-                android:id="@+id/tv_stats_wind"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/iv_stats_wind"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/iv_stats_wind"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:textColor="@color/white"
-                android:textSize="24dp"
-                tools:text="Wind stats (speed and temp)"/>
-
-            <ImageView
-                android:id="@+id/iv_stats_humidity"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/iv_stats_wind"
-                android:layout_marginBottom="8dp"
-                android:paddingBottom="4dp"
-                android:paddingEnd="4dp"
-                android:paddingStart="0dp"
-                android:paddingTop="4dp"
-                android:src="@drawable/ic_water_percent"
-                android:tint="@color/white"/>
-
-            <TextView
-                android:id="@+id/tv_stats_humidity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/iv_stats_humidity"
-                android:layout_alignTop="@+id/iv_stats_humidity"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/iv_stats_humidity"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:textColor="@color/white"
-                android:textSize="24dp"
-                tools:text="Humidity"/>
-
-            <ImageView
-                android:id="@+id/iv_stats_pressure"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/iv_stats_humidity"
-                android:layout_marginBottom="8dp"
-                android:paddingBottom="4dp"
-                android:paddingEnd="4dp"
-                android:paddingStart="0dp"
-                android:paddingTop="4dp"
-                android:src="@drawable/ic_gauge"
-                android:tint="@color/white"/>
-
-            <TextView
-                android:id="@+id/tv_stats_pressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/iv_stats_pressure"
-                android:layout_below="@+id/iv_stats_humidity"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/iv_stats_pressure"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:textColor="@color/white"
-                android:textSize="24dp"
-                tools:text="Pressure in mb"/>
-
-            <ImageView
-                android:id="@+id/iv_stats_visibility"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/iv_stats_pressure"
-                android:paddingBottom="4dp"
-                android:paddingEnd="4dp"
-                android:paddingStart="0dp"
-                android:paddingTop="4dp"
-                android:src="@drawable/ic_visibility"
-                android:tint="@color/white"/>
-
-            <TextView
-                android:id="@+id/tv_stats_visibility"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/iv_stats_visibility"
-                android:layout_below="@+id/iv_stats_pressure"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/iv_stats_visibility"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:textColor="@color/white"
-                android:textSize="24dp"
-                tools:text="Visibility in km"/>
-
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/tv_last_updated"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-thin"
-            android:paddingLeft="64dp"
-            android:paddingRight="8dp"
-            android:paddingTop="4dp"
-            android:textColor="@color/white"
-            android:textSize="16dp"
-            android:textStyle="italic"
-            tools:text="Last updated: 26 minutes ago"/>
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/white"/>
+        android:background="@color/white" />
 
     <LinearLayout
         android:id="@+id/calendar_layout"
@@ -391,7 +244,7 @@
             android:paddingStart="0dp"
             android:paddingTop="4dp"
             android:src="@drawable/ic_calendar"
-            android:tint="@color/white"/>
+            android:tint="@color/white" />
 
         <TextView
             android:id="@+id/tv_calendar_event"
@@ -407,7 +260,7 @@
             android:singleLine="true"
             android:textColor="@color/white"
             android:textSize="28dp"
-            tools:text="Very important stuff ya know, Very important stuff ya know, Very important stuff ya know, Very important stuff ya know"/>
+            tools:text="Very important stuff ya know, Very important stuff ya know, Very important stuff ya know, Very important stuff ya know" />
 
     </LinearLayout>
 
@@ -416,7 +269,7 @@
         android:layout_height="2dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/white"/>
+        android:background="@color/white" />
 
     <LinearLayout
         android:id="@+id/reddit_layout"
@@ -442,7 +295,7 @@
                 android:paddingStart="0dp"
                 android:paddingTop="4dp"
                 android:src="@drawable/ic_reddit"
-                android:tint="@color/white"/>
+                android:tint="@color/white" />
 
             <TextView
                 android:id="@+id/tv_reddit_post_votes"
@@ -453,7 +306,7 @@
                 android:singleLine="true"
                 android:textColor="@color/white"
                 android:textSize="26dp"
-                tools:text="9.9k"/>
+                tools:text="9.9k" />
 
         </LinearLayout>
 
@@ -467,8 +320,39 @@
             android:maxLines="3"
             android:textColor="@color/white"
             android:textSize="28dp"
-            tools:text="Debbie Reynolds dead at 84"/>
+            tools:text="Debbie Reynolds dead at 84" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_printer_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textColor="@color/white"
+        android:textSize="28dp"
+        tools:text="Printer is active." />
+
+    <ProgressBar
+        android:id="@+id/pb_printer_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="25" />
+
+    <TextView
+        android:id="@+id/tv_printer_eta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ETA 5:02"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lc_net_activity"
+        layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

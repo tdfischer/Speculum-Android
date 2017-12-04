@@ -8,6 +8,8 @@ import com.nielsmasdorp.speculum.services.OctoprintService;
 import com.nielsmasdorp.speculum.services.RedditService;
 import com.nielsmasdorp.speculum.services.SNMPService;
 
+import java.io.IOException;
+
 import javax.inject.Singleton;
 
 import dagger.Module;

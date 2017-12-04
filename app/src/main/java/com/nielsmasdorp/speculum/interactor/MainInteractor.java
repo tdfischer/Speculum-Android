@@ -58,48 +58,40 @@ public class MainInteractor {
         this.compositeSubscription = new CompositeSubscription();
     }
 
-    public void loadCalendarEvents(Subscriber<String> subscriber) {
-
-        compositeSubscription.add(Observable.interval(0, 60, TimeUnit.MINUTES)
-                .flatMap(ignore -> googleCalendarService.getCalendarEvents())
-                .retryWhen(Observables.exponentialBackoff(DELAY_IN_SECONDS, TimeUnit.SECONDS))
-                .observeOn(AndroidSchedulers.mainThread())
+    private <T> void subscribe(Observable<T> obvs, Subscriber<T> subscriber) {
+        compositeSubscription.add(obvs.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .subscribe(subscriber));
     }
 
+    public void loadCalendarEvents(Subscriber<String> subscriber) {
+        subscribe(Observable.interval(0, 60, TimeUnit.MINUTES)
+                .flatMap(ignore -> googleCalendarService.getCalendarEvents())
+                .retryWhen(Observables.exponentialBackoff(DELAY_IN_SECONDS, TimeUnit.SECONDS)), subscriber);
+    }
+
     public void loadSNMP(Subscriber<SNMPService.NetActivity> subscriber) {
-        compositeSubscription.add(Observable.interval(0, 80, TimeUnit.MILLISECONDS)
+        subscribe(Observable.interval(0, 80, TimeUnit.MILLISECONDS)
+                //.onBackpressureDrop()
                 .flatMap(ignore -> snmpService.getActivity())
-                .retry()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .subscribe(subscriber));
+                .retryWhen(Observables.exponentialBackoff(15, TimeUnit.MILLISECONDS))
+                .retry(), subscriber);
     }
 
     public void loadTopRedditPost(String subreddit, Subscriber<RedditPost> subscriber) {
 
-        compositeSubscription.add(Observable.interval(0, 30, TimeUnit.MINUTES)
+        subscribe(Observable.interval(0, 30, TimeUnit.MINUTES)
                 .flatMap(ignore -> redditService.getApi().getTopRedditPostForSubreddit(subreddit, Constants.REDDIT_LIMIT))
                 .flatMap(redditService::getRedditPost)
-                .retryWhen(Observables.exponentialBackoff(DELAY_IN_SECONDS, TimeUnit.SECONDS))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .subscribe(subscriber));
+                .retryWhen(Observables.exponentialBackoff(DELAY_IN_SECONDS, TimeUnit.SECONDS)), subscriber);
     }
 
     public void loadPrinter(Subscriber<Job> subscriber) {
-        compositeSubscription.add(Observable.interval(0, 30, TimeUnit.MINUTES)
+        subscribe(Observable.interval(0, 30, TimeUnit.MINUTES)
                 .flatMap(ignore -> octoprintService.getOctoprinter())
                 .flatMap(printer -> printer.getJob())
-                .retry()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .subscribe(subscriber));
+                .retry(), subscriber);
     }
 
     public void loadWeather(android.location.Location location, boolean celsius, String apiKey, Subscriber<Weather> subscriber) {
@@ -107,14 +99,10 @@ public class MainInteractor {
         final String query = celsius ? Constants.WEATHER_QUERY_SECOND_CELSIUS : Constants.WEATHER_QUERY_SECOND_FAHRENHEIT;
         String latlng = location.getLatitude() + "," + location.getLongitude();
 
-        compositeSubscription.add(Observable.interval(0, 30, TimeUnit.MINUTES)
+        subscribe(Observable.interval(0, 30, TimeUnit.MINUTES)
                 .flatMap(ignore -> forecastIOService.getApi().getCurrentWeatherConditions(apiKey, latlng, query))
                 .flatMap(response -> forecastIOService.getCurrentWeather(response, weatherIconGenerator, application))
-                .retryWhen(Observables.exponentialBackoff(DELAY_IN_SECONDS, TimeUnit.SECONDS))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .subscribe(subscriber));
+                .retryWhen(Observables.exponentialBackoff(DELAY_IN_SECONDS, TimeUnit.SECONDS)), subscriber);
     }
 
     public void getAssetsDirForSpeechRecognizer(Subscriber<File> subscriber) {

@@ -3,8 +3,12 @@ package com.nielsmasdorp.speculum.presenters;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -128,10 +132,36 @@ public class MainPresenter implements RecognitionListener, TextToSpeech.OnInitLi
     @SuppressLint("MissingPermission")
     private void onLocationGranted() {
         LocationManager manager = (LocationManager) this.application.getSystemService(Context.LOCATION_SERVICE);
-        android.location.Location location = manager.getLastKnownLocation(manager.getProviders(true).get(0));
+        String providerName = manager.getProviders(true).get(0);
+        android.location.Location location = manager.getLastKnownLocation(providerName);
 
-        interactor.loadWeather(location, configuration.isCelsius(), ((MainActivity)
-            view).getString(R.string.forecast_api_key), new WeatherSubscriber());
+        if (location == null) {
+            manager.requestSingleUpdate(providerName, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    interactor.loadWeather(location, configuration.isCelsius(), ((MainActivity)
+                            view).getString(R.string.forecast_api_key), new WeatherSubscriber());
+                }
+
+                @Override
+                public void onStatusChanged(String s, int i, Bundle bundle) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String s) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String s) {
+
+                }
+            }, Looper.myLooper());
+        } else {
+            interactor.loadWeather(location, configuration.isCelsius(), ((MainActivity)
+                    view).getString(R.string.forecast_api_key), new WeatherSubscriber());
+        }
     }
 
     private void startReddit() {
@@ -353,7 +383,7 @@ public class MainPresenter implements RecognitionListener, TextToSpeech.OnInitLi
         public void onCompleted() {}
 
         @Override
-        public void onError(Throwable e) { view.showError(e.getMessage());}
+        public void onError(Throwable e) { view.showError(e.getMessage());e.printStackTrace();}
     }
 
     private final class WeatherSubscriber extends DataSubscriber<Weather> {

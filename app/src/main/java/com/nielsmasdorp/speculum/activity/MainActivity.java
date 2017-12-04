@@ -9,9 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewStub;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -22,13 +20,11 @@ import android.widget.Toast;
 
 import com.afollestad.assent.Assent;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.nielsmasdorp.speculum.chart.GLChart;
 import com.nielsmasdorp.speculum.R;
 import com.nielsmasdorp.speculum.SpeculumApplication;
 import com.nielsmasdorp.speculum.models.Configuration;
@@ -41,9 +37,6 @@ import com.nielsmasdorp.speculum.util.ASFObjectStore;
 import com.nielsmasdorp.speculum.util.Constants;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -83,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
     @Nullable @BindView(R.id.tv_printer_status) TextView tvPrinterStatus;
     @Nullable @BindView(R.id.pb_printer_progress) ProgressBar pbPrinterProgress;
     @Nullable @BindView(R.id.tv_printer_eta) TextView tvPrinterETA;
-    @Nullable @BindView(R.id.lc_net_activity) LineChart lcNetActivity;
+    @Nullable @BindView(R.id.lc_net_activity) GLChart lcNetActivity;
 
     @BindString(R.string.old_config_found_snackbar) String oldConfigFound;
     @BindString(R.string.old_config_found_snackbar_back) String getOldConfigFoundBack;
@@ -108,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.verbose_layout);
         ((SpeculumApplication) getApplication()).createMainComponent(this).inject(this);
         Assent.setActivity(this, this);
         objectStore.setObject(new Configuration.Builder().build());
@@ -144,25 +137,30 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
         Configuration configuration = objectStore.get();
         boolean didLoadOldConfig = getIntent().getBooleanExtra(Constants.SAVED_CONFIGURATION_IDENTIFIER, false);
 
-        ViewStub viewStub = configuration.isSimpleLayout() ?
+        /*ViewStub viewStub = configuration.isSimpleLayout() ?
                 (ViewStub) findViewById(R.id.stub_simple) :
                 (ViewStub) findViewById(R.id.stub_verbose);
-        if (null != viewStub) viewStub.inflate();
+        if (null != viewStub) viewStub.inflate();*/
 
         ButterKnife.bind(this);
 
         //never sleep
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
         if (didLoadOldConfig)
             showConfigurationSnackbar();
 
         presenter.setConfiguration(configuration);
 
-        LineChart chart = (LineChart) findViewById(R.id.lc_net_activity);
+        /*LineChart chart = (LineChart) findViewById(R.id.lc_net_activity);
         chart.setData(lineData);
         chart.setAutoScaleMinMaxEnabled(true);
         chart.getLegend().setTextColor(Color.WHITE);
+        chart.setRenderer(new GLRendererWrapper(chart.getRenderer(), chart.getAnimator(), chart.getViewPortHandler()));*/
+        //GLSurfaceView glSurfaceView;);
+        //GLChart glChart;
+        //glChart.setData(lineData);
     }
 
     private void showConfigurationSnackbar() {
@@ -277,8 +275,42 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
     float lastDownload = 0;
     float lastUpload = 0;
 
+    ArrayList<Float> downloadSeries;
+
     public void displayNetActivity(SNMPService.NetActivity activity) {
-        LineData data = lcNetActivity.getData();
+        if (downloadSeries == null) {
+            downloadSeries = new ArrayList<>(200);
+            for(int i = 0; i < 200; i++) {
+                downloadSeries.add(0f);
+            }
+        }
+
+        if (lastDownload == 0) {
+            lastDownload = activity.download;
+            lastUpload = activity.upload;
+        }
+
+        float downloadDelta = activity.download - lastDownload;
+        float uploadDelta = activity.upload - lastUpload;
+        lastDownload = activity.download;
+        lastUpload = activity.upload;
+
+        lcNetActivity.push(lastDownload);
+
+        /*downloadSeries.add(downloadDelta);
+
+        while(downloadSeries.size() > 200) {
+            downloadSeries.remove(0);
+        }
+
+        float[] chartData = new float[downloadSeries.size()];
+        for(int i = 0; i < downloadSeries.size(); i++) {
+            chartData[i] = downloadSeries.get(i);
+        }*/
+
+        //lcNetActivity.setData(chartData);
+
+        /*LineData data = lcNetActivity.getData();
         ILineDataSet downloadSet = data.getDataSetByIndex(0);
         ILineDataSet uploadSet = data.getDataSetByIndex(1);
 
@@ -306,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements View.OnSystemUiVi
         lcNetActivity.notifyDataSetChanged();
         lcNetActivity.setAutoScaleMinMaxEnabled(true);
         lcNetActivity.setVisibleXRangeMaximum(250);
-        lcNetActivity.moveViewToX(downloadSet.getEntryCount());
+        lcNetActivity.moveViewToX(downloadSet.getEntryCount());*/
     }
 
     public void displayPrinterJob(Job job) {

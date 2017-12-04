@@ -349,7 +349,7 @@
         android:textColor="@color/white"
         android:textSize="20dp" />
 
-    <com.github.mikephil.charting.charts.LineChart
+    <com.nielsmasdorp.speculum.chart.GLChart
         android:id="@+id/lc_net_activity"
         layout_width="match_parent"
         android:layout_width="match_parent"
